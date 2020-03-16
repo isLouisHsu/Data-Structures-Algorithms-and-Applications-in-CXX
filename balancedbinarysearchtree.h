@@ -18,8 +18,6 @@ protected:
 	static int balancedFactor(BinaryTreeNode< Pair<K, V>*>*);
 	static BinaryTreeNode< Pair<K, V>*>* findImbalancedAncestor(
 		BinaryTreeNode< Pair<K, V>*>*, LinkedStack<bool>**);
-	static void llRotate(BinaryTreeNode< Pair<K, V>*>*);
-	static void rrRotate(BinaryTreeNode< Pair<K, V>*>*);
 };
 
 template<typename K, typename V>
@@ -54,50 +52,6 @@ BinaryTreeNode< Pair<K, V>*>* AVLTree<K, V>::\
 }
 
 template<typename K, typename V>
-void AVLTree<K, V>::llRotate(BinaryTreeNode< Pair<K, V>*>* A)
-{
-	// 修改根节点
-	if (A->parent) {
-		if (A == A->parent->left)
-			A->parent->left = A->left;
-		else
-			A->parent->right = A->left;
-	}
-	A->left->parent = A->parent;
-
-	// 修改A为Al右孩
-	BinaryTreeNode< Pair<K, V>*>* Alr = A->left->right;
-	A->parent = A->left;
-	A->parent->right = A;
-
-	// 修改Alr为A左孩
-	A->left = Alr;
-	if (Alr) Alr->parent = A;
-}
-
-template<typename K, typename V>
-void AVLTree<K, V>::rrRotate(BinaryTreeNode< Pair<K, V>*>* A)
-{
-	// 修改根节点
-	if (A->parent) {
-		if (A == A->parent->left)
-			A->parent->left = A->right;
-		else
-			A->parent->right = A->right;
-	}
-	A->right->parent = A->parent;
-
-	// 修改A为Ar左孩
-	BinaryTreeNode< Pair<K, V>*>* Arl = A->right->left;
-	A->parent = A->right;
-	A->parent->left = A;
-
-	// 修改Arl为A右孩
-	A->right = Arl;
-	if (Arl) Arl->parent = A;
-}
-
-template<typename K, typename V>
 void AVLTree<K, V>::insert(const K& key, const V& value)
 {
 	// 查找插入位置
@@ -120,18 +74,18 @@ void AVLTree<K, V>::insert(const K& key, const V& value)
 	switch (type)
 	{
 	case 0:			// LL
-		llRotate(A);
+		this->leftRotate(A);
 		break;
 	case 1:			// LR
-		rrRotate(A->left);
-		llRotate(A);
+		this->rightRotate(A->left);
+		this->leftRotate(A);
 		break;
 	case 2:			// RL
-		llRotate(A->right);
-		rrRotate(A);
+		this->leftRotate(A->right);
+		this->rightRotate(A);
 		break;
 	case 3:			// RR
-		rrRotate(A);
+		this->rightRotate(A);
 		break;
 	default:
 		break;
@@ -209,24 +163,24 @@ void AVLTree<K, V>::erase(const K& key)
 		switch (type)
 		{
 		case -1:		// L-1
-			rrRotate(A);
+			this->rightRotate(A);
 			break;
 		case 0:			// L0
-			rrRotate(A);
+			this->rightRotate(A);
 			break;
 		case 1:			// L1
-			llRotate(A->right);
-			rrRotate(A);
+			this->leftRotate(A->right);
+			this->rightRotate(A);
 			break;
 		case 3:			// R-1
-			rrRotate(A->left);
-			llRotate(A);
+			this->rightRotate(A->left);
+			this->leftRotate(A);
 			break;
 		case 4:			// R0
-			llRotate(A);
+			this->leftRotate(A);
 			break;
 		case 5:			// R1
-			llRotate(A);
+			this->leftRotate(A);
 			break;
 		default:
 			break;
@@ -243,4 +197,131 @@ void AVLTree<K, V>::erase(const K& key)
 	delete routine;
 	Pair<K, V>* pair = node->get();
 	delete pair; delete node;
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+template<typename K, typename V>
+class RBTree : public BinarySearchTree<K, V>
+{
+	// TODO:
+};
+
+///////////////////////////////////////////////////////////////////////////////////
+template<typename K, typename V>
+class SplayTree : public BinarySearchTree<K, V>
+{
+public:
+	SplayTree() : BinarySearchTree<K, V>() {}
+	~SplayTree(){}
+
+	void insert(const K&, const V&);
+	void erase(const K&);
+
+protected:
+	void slay(BinaryTreeNode< Pair<K, V>*>*);
+
+};
+
+template<typename K, typename V>
+void SplayTree<K, V>::slay(BinaryTreeNode< Pair<K, V>*>* node)
+{
+	// 分裂操作
+	while (node->parent) {
+		int type = node->parent->isRoot() << 2;
+		if (type) {	// 无祖父节点，即父节点为根节点
+			type += node->isLeft();
+			this->m_tnRoot = node;		// 修改根节点
+		}
+		else {		// 有祖父节点
+			type += (node->parent->isLeft() << 1) + node->isLeft();
+			if (node->parent->parent->isRoot())
+				this->m_tnRoot = node;	// 修改根节点
+		}
+
+		switch (type)
+		{
+		case 0b0101:	// L
+			SplayTree<K, V>::leftRotate(node->parent);
+			break;
+		case 0b0100:	// R
+			SplayTree<K, V>::rightRotate(node->parent);
+			break;
+		case 0b0011:	// LL
+			SplayTree<K, V>::leftRotate(node->parent->parent);
+			SplayTree<K, V>::leftRotate(node->parent);
+			break;
+		case 0b0010:	// LR
+			SplayTree<K, V>::rightRotate(node->parent);
+			SplayTree<K, V>::leftRotate (node->parent);
+			break;
+		case 0b0000:	// RR
+			SplayTree<K, V>::rightRotate(node->parent->parent);
+			SplayTree<K, V>::rightRotate(node->parent);
+			break;
+		case 0b0001:	// RL
+			SplayTree<K, V>::leftRotate(node->parent);
+			SplayTree<K, V>::rightRotate(node->parent);
+			break;
+		default:
+			break;
+		}
+	}
+
+}
+
+template<typename K, typename V>
+void SplayTree<K, V>::insert(const K& key, const V& value)
+{
+	BinaryTreeNode< Pair<K, V>*>* node = this->find(key, true);
+	Pair<K, V>* p = node->get();
+	if (p->getKey() != key)
+		p->setKey(key);
+	p->setVal(value);
+	
+	slay(node);
+}
+
+template<typename K, typename V>
+void SplayTree<K, V>::erase(const K& key)
+{
+	BinaryTreeNode< Pair<K, V>*>* node = this->find(key, false);
+	if (!node) return;
+
+	BinaryTreeNode< Pair<K, V>*>* slayNode = node->parent;
+
+	// ------------------ 重新组织二叉树 ------------------
+	// 查找左子树的最大值，或右子树的最小值
+	BinaryTreeNode< Pair<K, V>*>* replace = nullptr;
+	while (!node->isLeaf()) {			// 直到搜索到叶节点为止
+		if (node->left) {
+			replace = this->max(node->left);
+		}
+		else if (node->right) {
+			replace = this->min(node->right);
+		}
+
+		if (replace) {					// 找到可替换子节点
+			Pair<K, V>* np = node->get();
+			Pair<K, V>* rp = replace->get();
+			np->setKey(rp->getKey());
+			np->setVal(rp->getVal());
+			node = replace;
+		}
+	}
+
+	if (node->parent) {				// 修改父节点信息
+		if (node == node->parent->left)
+			node->parent->left = nullptr;
+		else
+			node->parent->right = nullptr;
+	}
+	else {						// 无父节点，即整棵树只有一个根节点，则修改根节点为空
+		this->m_tnRoot = nullptr;
+	}
+
+	// ------------------ 释放资源 ------------------
+	Pair<K, V>* pair = node->get();
+	delete pair; delete node;
+
+	slay(slayNode);
 }

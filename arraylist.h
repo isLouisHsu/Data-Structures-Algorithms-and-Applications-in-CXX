@@ -1,4 +1,4 @@
-s#pragma once
+#pragma once
 #include <iostream>
 #include <algorithm>
 #include <cmath>
@@ -23,11 +23,11 @@ public:
 	T&   get    (const int index)   const;
 	int  indexOf(const T&  element) const;
 
-	// �������
+	// �������?
 	void insert(const int index, const T& e);
 	void erase (const int index);
 
-	// ���
+	// ���?
 	void print() const;
 
 protected:
@@ -120,7 +120,7 @@ void ArrayList<T>::expend()
 {
 	int size = 2 * m_iSize;
 
-	// �±��ڴ�ռ䣬������
+	// �±��ڴ�ռ�?������
 	T* elements = new T[size];
 	std::copy(m_TElements, m_TElements + m_iSize, elements);
 
@@ -167,11 +167,11 @@ public:
 	T&   get(const int index)   const;
 	int  indexOf(const T& value) const;
 
-	// �������
+	// �������?
 	void insert(const int index, const T& value);
 	void erase(const int index);
 
-	// ���
+	// ���?
 	void print() const;
 
 	// ����
@@ -208,7 +208,7 @@ ChainList<T>::~ChainList()
 	while (!node->ptr && !node) {
 		ChainNode<T>* tmp = node->next;
 
-		// �ͷŽڵ�ռ�
+		// �ͷŽڵ�ռ�?
 		node->~ChainNode();
 
 		delete node;
@@ -256,7 +256,7 @@ void ChainList<T>::insert(const int index, const T& value)
 	// ��ȡ�ڵ�
 	ChainNode<T>* node = getNode(index);
 
-	// ���ӣ�ע��ͷ�ڵ�Ĵ���
+	// ���ӣ�ע��ͷ�ڵ�Ĵ���?
 	if (node->prev) {
 		node->prev->next = tmp; 
 		tmp->prev = node->prev;
@@ -278,7 +278,7 @@ void ChainList<T>::erase(const int index)
 	if (index == 0) {
 		m_cnHead = node->next; m_cnHead->prev = nullptr;}
 
-	// ���ӣ��ͷţ�ע��ͷ�ڵ�Ĵ���
+	// ���ӣ��ͷţ�ע��ͷ�ڵ�Ĵ���?
 	if(node->prev) node->prev->next = node->next;
 	node->~ChainNode();
 
@@ -300,7 +300,7 @@ void ChainList<T>::print() const
 template<typename T>
 ChainList<int> ChainList<T>::binsort(int range, T (*pFunc)(T))
 {
-	// ��������(����±꣬��ʡ�ڴ棬��ʱ������ڲ�ѯ)
+	// ��������(����±�?��ʡ�ڴ棬��ʱ������ڲ��?)
 	ChainList<int>** bins = new ChainList<int>* [range];
 	for (int i = 0; i < range; i++){
 		bins[i] = new ChainList<int>;

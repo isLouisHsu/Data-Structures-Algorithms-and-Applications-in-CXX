@@ -12,6 +12,7 @@ public:
 	~BinarySearchTree() {}
 
 	BinaryTreeNode< Pair<K, V>*>* find(const K&, bool insert=false);
+	V& get(const K&);
 	void insert(const K&, const V&);
 	void erase(const K&);
 	void print();	// 注意
@@ -24,6 +25,9 @@ protected:
 	static void printPairNode(BinaryTreeNode< Pair<K, V>*>*);
 	static BinaryTreeNode< Pair<K, V>*>* max(BinaryTreeNode< Pair<K, V>*>*);
 	static BinaryTreeNode< Pair<K, V>*>* min(BinaryTreeNode< Pair<K, V>*>*);
+
+	static void leftRotate(BinaryTreeNode< Pair<K, V>*>*);
+	static void rightRotate(BinaryTreeNode< Pair<K, V>*>*);
 };
 
 template<typename K, typename V>
@@ -78,6 +82,15 @@ BinaryTreeNode< Pair<K, V>*>* BinarySearchTree<K, V>::find(const K& key, bool in
 		node->right = n;
 
 	return n;
+}
+
+template<typename K, typename V>
+V& BinarySearchTree<K, V>::get(const K& key)
+{
+	BinaryTreeNode< Pair<K, V>*>* node = find(key, false);
+	if (!node) return 0;
+
+	return node->get()->getVal();
 }
 
 template<typename K, typename V>
@@ -166,6 +179,50 @@ void BinarySearchTree<K, V>::printPairNode(BinaryTreeNode< Pair<K, V>*>* node)
 	if (!node) return;
 	Pair<K, V>* p = node->get();
 	std::cout << '[' << p->getKey() << ']' << p->getVal() << ' ';
+}
+
+template<typename K, typename V>
+void BinarySearchTree<K, V>::leftRotate(BinaryTreeNode< Pair<K, V>*>* A)
+{
+	// 修改根节点
+	if (A->parent) {
+		if (A == A->parent->left)
+			A->parent->left = A->left;
+		else
+			A->parent->right = A->left;
+	}
+	A->left->parent = A->parent;
+
+	// 修改A为Al右孩
+	BinaryTreeNode< Pair<K, V>*>* Alr = A->left->right;
+	A->parent = A->left;
+	A->parent->right = A;
+
+	// 修改Alr为A左孩
+	A->left = Alr;
+	if (Alr) Alr->parent = A;
+}
+
+template<typename K, typename V>
+void BinarySearchTree<K, V>::rightRotate(BinaryTreeNode< Pair<K, V>*>* A)
+{
+	// 修改根节点
+	if (A->parent) {
+		if (A == A->parent->left)
+			A->parent->left = A->right;
+		else
+			A->parent->right = A->right;
+	}
+	A->right->parent = A->parent;
+
+	// 修改A为Ar左孩
+	BinaryTreeNode< Pair<K, V>*>* Arl = A->right->left;
+	A->parent = A->right;
+	A->parent->left = A;
+
+	// 修改Arl为A右孩
+	A->right = Arl;
+	if (Arl) Arl->parent = A;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////

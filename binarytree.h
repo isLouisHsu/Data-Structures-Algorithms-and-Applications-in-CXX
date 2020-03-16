@@ -85,6 +85,7 @@ public:
 		left  = right = nullptr;  value = new T; }
 	~BinaryTreeNode() { delete value; }
 
+	bool isLeft() const { if (!parent) return false; return parent->left == this; }// 是否为左子节点
 	bool isRoot() const { return !parent; }				// 是否为根节点
 	bool isLeaf() const { return (!left) && (!right); }	// 是否为叶子节点
 
