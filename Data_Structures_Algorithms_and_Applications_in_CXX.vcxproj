@@ -154,10 +154,13 @@
     <ClInclude Include="balancedbinarysearchtree.h" />
     <ClInclude Include="binarysearchtree.h" />
     <ClInclude Include="binarytree.h" />
+    <ClInclude Include="graph.h" />
     <ClInclude Include="linkeddictionary.h" />
     <ClInclude Include="linkedqueue.h" />
     <ClInclude Include="linkedstack.h" />
+    <ClInclude Include="matrix.h" />
     <ClInclude Include="priorityqueue.h" />
+    <ClInclude Include="sort.h" />
     <ClInclude Include="winnertree.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
