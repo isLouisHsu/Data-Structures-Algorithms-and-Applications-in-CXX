@@ -39,7 +39,7 @@ public:
 		}
 		std::cout << std::endl;
 	}
-
+	
 	// ------------------ 深度优先搜索 ------------------ 
 	void preOrder(void (*visit)(int node), int node = 0) {	// 前序遍历
 		if (!checkNode(node)) return; visit(node); preOrder(visit, left(node)); preOrder(visit, right(node)); }
@@ -112,6 +112,7 @@ public:
 	int height();					// 二叉树高度
 	bool empty();					// 二叉树是否为空
 	void print(int mode = 3);
+	void print2();
 	void swap();					// 交换二叉树的左右子节点
 
 	// ------------------ 深度优先搜索 ------------------ 
@@ -271,6 +272,34 @@ void LinkedBinaryTree<T>::print(int mode) {
 		break;
 	}
 	std::cout << std::endl;
+}
+
+template<typename T>
+void LinkedBinaryTree<T>::print2()
+{
+	if (!m_tnRoot) return;
+
+	// 初始化队列，并放入空指针作为换行标记
+	LinkedQueue<BinaryTreeNode<T>*> queue;
+	queue.push(m_tnRoot); 
+	queue.push(nullptr);
+
+	while (queue.size() > 0) {
+		BinaryTreeNode<T>* node = queue.pop();
+		if (node == nullptr) {
+			// 队列中只有一个空指针
+			if (queue.size() == 0)break;
+			// 遇到换行标记，并在队列尾加入空指针
+			std::cout << std::endl;
+			queue.push(nullptr);
+			continue;
+		}
+		// 打印指针内容
+		printNode(node);
+		// 将子节点加入队列
+		if (node->left) queue.push(node->left);
+		if (node->right) queue.push(node->right);
+	}
 }
 
 template<typename T>

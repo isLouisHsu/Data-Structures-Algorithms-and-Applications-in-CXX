@@ -20,8 +20,10 @@ public:
 					// - 类的静态成员无法声明为const。
 
 	void ascending();
+	bool isValid();
 
 protected:
+	static bool isValid(BinaryTreeNode< Pair<K, V>*>* root, BinaryTreeNode< Pair<K, V>*>* minNode, BinaryTreeNode< Pair<K, V>*>* maxNode);
 	static void printPairNode(BinaryTreeNode< Pair<K, V>*>*);
 	static BinaryTreeNode< Pair<K, V>*>* max(BinaryTreeNode< Pair<K, V>*>*);
 	static BinaryTreeNode< Pair<K, V>*>* min(BinaryTreeNode< Pair<K, V>*>*);
@@ -165,6 +167,27 @@ void BinarySearchTree<K, V>::ascending()
 	this->inOrder(&printPairNode, this->m_tnRoot);
 	std::cout << std::endl;
 }
+
+template<typename K, typename V>
+bool BinarySearchTree<K, V>::isValid()
+{
+	if (m_tnRoot == nullptr) return true;
+	return isValid(m_tnRoot, nullptr, nullptr);
+}
+
+template<typename K, typename V>
+bool isValid(BinaryTreeNode< Pair<K, V>*>* root, 
+	BinaryTreeNode< Pair<K, V>*>* minNode, BinaryTreeNode< Pair<K, V>*>* maxNode)
+{
+	if (root == nullptr) return true;
+	if ((minNode != nullptr && root->value <= minNode->value) || \
+		(maxNode != nullptr && root->value >= maxNode->value)) {
+		return false;
+	}
+	return isValid(root->left, minNode, root) && \
+			isValid(root->right, root, maxNode);
+}
+
 
 template<typename K, typename V>
 void BinarySearchTree<K, V>::print()

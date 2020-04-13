@@ -373,3 +373,29 @@ ChainList<T> ChainList<T>::ordered(const ChainList<int> order)
 	}
 	return output;
 }
+
+// LintCodeË¢ÌâÓÃ
+class ListNode {
+public:
+	int val;
+	ListNode* next;
+	ListNode(int val) {
+		this->val = val;
+		this->next = NULL;
+	}
+	ListNode* buildList(int* a, int n) {
+		ListNode* head = nullptr;
+		ListNode* node = nullptr;
+		for (int i = 0; i < n; i++) {
+			ListNode* newnode = new ListNode(a[i]);
+			if (head == nullptr) {
+				head = node = newnode;
+			}
+			else {
+				node->next = newnode;
+				node = node->next;
+			}
+		}
+		return head;
+	}
+};

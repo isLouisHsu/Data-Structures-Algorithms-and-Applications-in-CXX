@@ -1,24 +1,30 @@
-﻿// Data_Structures_Algorithms_and_Applications_in_CXX.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
-//
-
-#include <iostream>
-#include <string>
-#include <cmath>
-#include <functional>
+﻿#include <iostream>
+#include <sstream>
 #include <algorithm>
+#include <limits>
+#include <numeric>
 #include <vector>
+#include <string>
+#include <unordered_map>
+#include <stack>
+#include <queue>
 #include "sort.h"
 
 using namespace std;
 
-int main(int argc, char** argv)
+int main()
 {
-    int numbers[10] = { 8, 4, 7, 3, 6, 1, 2, 9, 10, 5 };
+    int nums[10] = {50, 30, 0, 100, 11, 2, 123, 543, 187, 49};
+    vector<int> numsv(nums, nums + 10);
 
-    quickSort(numbers, 10);
-    for (int i = 0; i < 10; i++)
-        cout << numbers[i] << ' ';
+    shellSort(numsv);
 
-	system("pause");
+    int num = 5;
+    num = ~num + 1;
+
+    string input;
+    getline(cin, input);
+    stringstream ss(input);
+
+    return 0;
 }
-

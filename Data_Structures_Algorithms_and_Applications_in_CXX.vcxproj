@@ -160,6 +160,7 @@
     <ClInclude Include="linkedstack.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="priorityqueue.h" />
+    <ClInclude Include="search.h" />
     <ClInclude Include="sort.h" />
     <ClInclude Include="winnertree.h" />
   </ItemGroup>
