@@ -136,7 +136,7 @@ void mergeSort(T a[], int n)
 
 // -----------------------------------------------------------------------------------------------------
 template<typename T>
-int partition(T a[], int begin, int end)
+int partition1(T a[], int begin, int end)
 {
 	if (a == nullptr || begin >= end) return -1;
 
@@ -163,12 +163,72 @@ int partition(T a[], int begin, int end)
 }
 
 template<typename T>
+int partition2(T a[], int begin, int end)
+{
+	if (a == nullptr || begin >= end) return -1;
+
+	// 当前子数组的头元素视作支点
+	T pivot = a[begin];	
+	// 快慢指针
+	int slow = begin, fast = begin;
+	while (true) {
+		// 先走一步
+		fast++;
+		if (fast == end) break;
+
+		// 快指针不停的走，直到值遇到不大于支点的节点
+		if (a[fast] <= pivot) {
+			// 慢指针跟上一步
+			slow++;
+			// 交换
+			T temp = a[slow];
+			a[slow] = a[fast];
+			a[fast] = temp;
+		}
+	}
+	// 支点放置到合适位置
+	a[begin] = a[slow];
+	a[slow] = pivot;
+	return slow;
+}
+
+template<typename T>
+int partition3(T a[], int begin, int end)
+{
+	if (a == nullptr || begin >= end) return -1;
+
+	// 当前子数组的头元素视作支点
+	T pivot = a[begin];
+	// 左右指针
+	bool flag = true;	// 指针移动标志
+	int left = begin, right = end - 1;
+	while (true) {
+		// 指针顺序查找
+		if (flag) {
+			// 从右到左查找不小于pivot的元素
+			while (right >= 0 && a[right] >= pivot) right--;
+			if (left >= right) return left;
+		} else {
+			// 从左到右查找大于pivot的元素
+			while (left < end && a[left] <= pivot) left++;
+			if (left >= right) return right;
+		}
+		// 交换元素
+		T temp = a[left];
+		a[left] = a[right];
+		a[right] = temp;
+		// 交换方向
+		flag = !flag;
+	}
+}
+
+template<typename T>
 void quickSort(T a[], int begin, int end)	// a[begin] ~ a[end - 1]
 {
 	if (a == nullptr || begin >= end) return;
 	if (end - begin < 2) return;	// 终止条件：仅包含1个数，无需排序
 
-	int pivot = partition(a, begin, end);
+	int pivot = partition2(a, begin, end);
 	if (pivot == -1) return;
 	// 划分子数组，递归
 	quickSort(a, begin, pivot);
@@ -355,6 +415,33 @@ void shellSort(std::vector<T>& nums)
 
 			// 对分组数据`nums[k], nums[k + gk], nums[k + 2 * gk]... `进行选择排序
 			shellInsertSort(nums, k, gk);
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------------------------------
+template<typename T>
+void bucketSort(std::vector<T>& nums)
+{
+	if (nums.size() < 2) return;
+	// 寻找最小最大元素
+	T minVal = *std::min_element(nums.begin(), nums.end());
+	T maxVal = *std::max_element(nums.begin(), nums.end());
+	// 构筑“桶”，间隔为`10`
+	std::vector<std::vector<T> > bins((maxVal - minVal) / 10 + 1);
+	for (int i = 0; i < nums.size(); i++) {
+		// 映射
+		int index = (nums[i] - minVal) / 10;
+		bins[index].push_back(nums[i]);
+	}
+	// 桶内排序，并取出
+	int k = 0;
+	for (int i = 0; i < bins.size(); i++) {
+		std::sort(bins[i].begin(), bins[i].end());
+		while (!bins[i].empty()) {
+			auto it = bins[i].begin();
+			nums[k++] = *it;
+			bins[i].erase(it);
 		}
 	}
 }

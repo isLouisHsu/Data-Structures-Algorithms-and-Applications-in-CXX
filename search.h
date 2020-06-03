@@ -124,3 +124,53 @@ int findK(T a[], int n, int k)
 {
 	return findK(a, 0, n, k);
 }
+
+// ----------------------------------------------------------------------------------------------------
+#include <string>
+
+// http://www.ruanyifeng.com/blog/2013/05/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm.html
+int kmp(const std::string& source, const std::string& target)
+{
+	int m = source.size();
+	int n = target.size();
+
+	// 计算部分匹配值
+	int* match = new int[n];
+	for (int i = 0; i < n; i++) {
+		match[i] = 0;
+		// 截取子字符串
+		std::string subPattern = target.substr(0, i + 1);
+		int _n = subPattern.size();
+		for (int _len = 1; _len < i + 1; _len++) {	// 串前/后缀长度
+			std::string prefix = subPattern.substr(0, _len);			// 前缀
+			std::string suffix = subPattern.substr(_n - _len, _len);	// 后缀
+			if (prefix == suffix) {
+				match[i] = _len;	// 共有元素的长度
+			}
+		}
+	}
+
+	// 开始匹配
+	int i = 0, j = 0;
+	while (i < m && j < n) {
+		// --- 字符相同，两个指针共同前进 --- 
+		if (source[i] == target[j]) {
+			i++; j++;
+			continue;
+		} 
+		// ------ 字符不相同需要跳转 -------
+		if (j == 0) {
+			i++;
+		} else if (j > 0) {
+			j = match[j - 1];	// 后缀不匹配，但前缀可能匹配，移动到相同前缀后一位的位置
+		}
+	}
+
+	// source已到末尾
+	if (i == m) {
+		// target同时到末尾则匹配成功
+		return j == n ? i - j : -1;
+	}
+	// source未到达末尾，target到达末尾
+	return i - j;	// 开始索引
+}

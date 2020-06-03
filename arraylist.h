@@ -383,7 +383,7 @@ public:
 		this->val = val;
 		this->next = NULL;
 	}
-	ListNode* buildList(int* a, int n) {
+	static ListNode* buildList(int* a, int n) {
 		ListNode* head = nullptr;
 		ListNode* node = nullptr;
 		for (int i = 0; i < n; i++) {
